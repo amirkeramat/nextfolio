@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// Define custom enums for more accurate role representation
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  userName       String
+  email          String       @unique
+  verified       DateTime?
+  image          String?
+  hashedPassword String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  role           Role         @default(ADMIN)
+  technologies   Technology[]
+  posts          post[]
+  projects       Project[]
+  accounts       Account[]
+  bio            String?
+}
+
+model VerificationToken {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model defaultBio {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  content       String
+  defaultBios   defaultBios? @relation(fields: [defaultBiosId], references: [id])
+  defaultBiosId String?      @db.ObjectId
+}
+
+model defaultBios {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  defaultBios defaultBio[]
+}
+
+model Tag {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  image     String?
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?  @db.ObjectId
+  Tags      Tags?    @relation(fields: [tagsId], references: [id])
+  tagsId    String?  @db.ObjectId
+}
+
+model Tags {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  tags Tag[]
+}
+
+model Project {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  imageUrl    String[]
+  deployUrl   String?
+  gitUrl      String?
+  tags        Tag[]
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      String?  @db.ObjectId
+}
+
+model post {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  tag     String?
+  content String
+  images  String[]
+  User    User?    @relation(fields: [userId], references: [id])
+  userId  String?  @db.ObjectId
+}
+
+model Technology {
+  id                   String              @id @default(auto()) @map("_id") @db.ObjectId
+  title                String
+  image                String?
+  rate                 String?
+  User                 User?               @relation(fields: [userId], references: [id])
+  userId               String?             @db.ObjectId
+  TechnologyCategory   TechnologyCategory? @relation(fields: [technologyCategoryId], references: [id])
+  technologyCategoryId String?             @db.ObjectId
+}
+
+model TechnologyCategory {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  technologies Technology[]
+}
+
+model Avatar {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  url       String
+  avatarId  String?  @db.ObjectId
+  Avatars   Avatars? @relation(fields: [avatarsId], references: [id])
+  avatarsId String?  @db.ObjectId
+}
+
+model Avatars {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  avatars Avatar[]
+}
+
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
