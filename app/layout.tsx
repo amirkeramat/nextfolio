@@ -21,7 +21,9 @@ export default function RootLayout({
         <AuthContext>
           <ToastProvider />
           <Navbar />
-          <main className="container flex-1 flex-shrink">{children}</main>
+          <main className="flex-1 flex-shrink px-0 2xl:container">
+            {children}
+          </main>
           <Footer />
         </AuthContext>
       </body>

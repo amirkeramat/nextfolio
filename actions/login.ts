@@ -22,20 +22,20 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
     return { error: "مشخصات وارد شده صحیح نمی باشد" };
   }
 
-  if (!existingUser.verified) {
-    const verificationToken = await generateVerificationToken(
-      existingUser.email
-    );
+  // if (!existingUser.verified) {
+  //   const verificationToken = await generateVerificationToken(
+  //     existingUser.email
+  //   );
 
-    // await sendVerificationEmail(
-    //   verificationToken.email,
-    //   verificationToken.token
-    // );
+  //   // await sendVerificationEmail(
+  //   //   verificationToken.email,
+  //   //   verificationToken.token
+  //   // );
 
-    return {
-      success: "ایمیل شما نیاز به تایید دارد لینک تایید به ایمیل شما ارسال شد.",
-    };
-  }
+  //   return {
+  //     success: "ایمیل شما نیاز به تایید دارد لینک تایید به ایمیل شما ارسال شد.",
+  //   };
+  // }
 
   try {
     await signIn("credentials", {

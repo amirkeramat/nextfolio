@@ -145,3 +145,19 @@ model Account {
 
   @@unique([provider, providerAccountId])
 }
+
+model SidebarItem {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  href           String
+  icon           String?
+  role           Role
+  isActive       Boolean      @default(false)
+  sidebarItems   SidebarItems @relation(fields: [sidebarItemsId], references: [id])
+  sidebarItemsId String       @db.ObjectId
+}
+
+model SidebarItems {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  sidebarItems SidebarItem[]
+}

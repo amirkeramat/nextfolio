@@ -16,19 +16,19 @@ export const {
     error: "/auth/error",
   },
   callbacks: {
-    async signIn({ user, account }) {
-      //Allow Oauth without  email verification for now
-      if (account?.provider !== "credentials") return true;
+    // async signIn({ user, account }) {
+    //   //Allow Oauth without  email verification for now
+    //   if (account?.provider !== "credentials") return true;
 
-      const existingUser = await getUserById(user?.id as string);
+    //   const existingUser = await getUserById(user?.id as string);
 
-      //prevent signIn without email verification
-      // if (!existingUser?.verified) return false;
+    //   //prevent signIn without email verification
+    //   // if (!existingUser?.verified) return false;
 
-      return true;
+    //   return true;
 
-      // TODO:Add 2FA check
-    },
+    //   // TODO:Add 2FA check
+    // },
     async session({ session, token }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
